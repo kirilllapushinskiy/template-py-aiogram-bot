@@ -2,7 +2,7 @@
 name = "manager-bot"
 version = "0.0.1"
 description = "Administration and management of chats and channels in telegram."
-authors = ["Kirill Lapushinskiy <kirill@lapushinskiy.ru>"]
+authors = ["Kirill Lapushinskiy <kirill@lapushinskiy.ru>", "Nikita Novikov <sqqvt1@gmail.com>"]
 license = "GNU Affero General Public License v3.0"
 
 [tool.poetry.dependencies]

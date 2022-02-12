@@ -10,7 +10,10 @@ from abc import ABC, abstractmethod
 from types import SimpleNamespace
 import json
 
-class AbstactBot(ABC):
+from utils.singletone import SingletonABC
+
+class AbstactBot(SingletonABC):
+
     def __init__(self, config_file_name='projectconfig.json'):
         with open(config_file_name, "r") as file:
             self.config = json.loads(file.read(), object_hook=lambda data: SimpleNamespace(**data))
@@ -43,8 +46,6 @@ class WebhookBot(AbstactBot):
     async def on_shutdown(self, _dispatcher):
         await super().on_shutdown(_dispatcher)
         await self.bot.delete_webhook()
-        
-
 
     def start(self):
         start_webhook(

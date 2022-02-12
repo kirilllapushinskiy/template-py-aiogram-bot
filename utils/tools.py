@@ -24,6 +24,9 @@ class AbstactModel(SingletonABC):
     def get_dispatcher(self):
         return self.__dispatcher
 
+    def get_bot(self):
+        return self.__dispatcher
+
     @abstractmethod
     async def on_startup(self, _dispatcher):
         log.info("Bot startup...")

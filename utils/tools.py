@@ -1,7 +1,6 @@
-from aiogram import Bot, types
+from aiogram import Bot
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import Dispatcher
-from aiogram.dispatcher.webhook import SendMessage
 from aiogram.utils.executor import start_webhook, start_polling
 
 from loguru import logger as log
@@ -12,25 +11,24 @@ import json
 
 from utils.singletone import SingletonABC
 
-class AbstactModel(SingletonABC):
 
-    def __init__(self, config_file_name='projectconfig.json'):
+class AbstractModel(SingletonABC):
+
+    def __init__(self, config_file_name='project.json'):
         with open(config_file_name, "r") as file:
             self.config = json.loads(file.read(), object_hook=lambda data: SimpleNamespace(**data))
-        self.__bot = Bot(token=self.config.api.token)
-        self.__dispatcher = Dispatcher(self.__bot)
-        self.__dispatcher.middleware.setup(LoggingMiddleware())
+        self._bot = Bot(token=self.config.api.token)
+        self._dispatcher = Dispatcher(self._bot)
+        self._dispatcher.middleware.setup(LoggingMiddleware())
 
     def get_dispatcher(self):
-        return self.__dispatcher
+        return self._dispatcher
 
     def get_bot(self):
-        return self.__bot
+        return self._bot
 
     @abstractmethod
     async def on_startup(self, _dispatcher):
-        log.info("Bot startup...")
-        log.warning("Running!")
         pass
 
     @abstractmethod
@@ -45,19 +43,19 @@ class AbstactModel(SingletonABC):
         pass
 
 
-class WebhookModel(AbstactModel):
+class WebhookModel(AbstractModel):
     async def on_startup(self, _dispatcher):
         await super().on_startup(_dispatcher)
-        await self._AbstactModel__bot.set_webhook(self.config.webhook.host + self.config.webhook.path)
+        await self._bot.set_webhook(self.config.webhook.host + self.config.webhook.path)
 
     async def on_shutdown(self, _dispatcher):
         await super().on_shutdown(_dispatcher)
-        await self._AbstactModel__bot.delete_webhook()
+        await self._bot.delete_webhook()
 
     def start(self):
         log.warning("The application is running in webhook mode.")
         start_webhook(
-            dispatcher=self._AbstactModel__dispatcher,
+            dispatcher=self._dispatcher,
             webhook_path=self.config.webhook.path,
             on_startup=self.on_startup,
             on_shutdown=self.on_shutdown,
@@ -67,7 +65,7 @@ class WebhookModel(AbstactModel):
         )
 
 
-class PollingModel(AbstactModel):
+class PollingModel(AbstractModel):
     async def on_startup(self, _dispatcher):
         await super().on_startup(_dispatcher)
 
@@ -75,11 +73,10 @@ class PollingModel(AbstactModel):
         await super().on_shutdown(_dispatcher)
 
     def start(self):
-        log.warning("the application is running in polling mode")
+        log.warning("The application is running in polling mode.")
         start_polling(
-            dispatcher=self._AbstactModel__dispatcher,
+            dispatcher=self._dispatcher,
             skip_updates=True,
             on_shutdown=self.on_shutdown,
             on_startup=self.on_startup
         )
-        

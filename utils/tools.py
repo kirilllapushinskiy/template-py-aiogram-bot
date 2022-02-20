@@ -2,6 +2,7 @@ from aiogram import Bot
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.executor import start_webhook, start_polling
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from loguru import logger as log
 
@@ -18,7 +19,8 @@ class AbstractModel(SingletonABC):
         with open(config_file_name, "r") as file:
             self.config = json.loads(file.read(), object_hook=lambda data: SimpleNamespace(**data))
         self._bot = Bot(token=self.config.api.token)
-        self._dispatcher = Dispatcher(self._bot)
+        self._memory_storage = MemoryStorage()
+        self._dispatcher = Dispatcher(self._bot, storage=self._memory_storage)
         self._dispatcher.middleware.setup(LoggingMiddleware())
 
     def get_dispatcher(self):
@@ -26,6 +28,9 @@ class AbstractModel(SingletonABC):
 
     def get_bot(self):
         return self._bot
+
+    def get_storage(self):
+        return self._memory_storage
 
     @abstractmethod
     async def on_startup(self, _dispatcher):

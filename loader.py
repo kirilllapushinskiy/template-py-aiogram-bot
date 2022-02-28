@@ -1,7 +1,7 @@
 from utils import WebhookModel, PollingModel
 import argparse
 
-__all__ = ['dp', 'engine', 'bot']
+__all__ = ['dp', 'bot_engine', 'bot', 'memory_storage']
 
 parser = argparse.ArgumentParser("main.py")
 
@@ -12,7 +12,9 @@ parser.add_argument("--mode", "-m", nargs=1,
                     )
 
 args = parser.parse_args()
-print(args.mode)
-engine = WebhookModel() if args.mode[0] == 'webhook' else PollingModel()
-dp = engine.get_dispatcher()
-bot = engine.get_bot()
+
+bot_engine = WebhookModel() if args.mode[0] == 'webhook' else PollingModel()
+
+memory_storage = bot_engine.get_storage()
+dp = bot_engine.get_dispatcher()
+bot = bot_engine.get_bot()

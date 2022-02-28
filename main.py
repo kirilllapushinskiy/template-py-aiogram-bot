@@ -1,6 +1,8 @@
-from handlers import dp
-from loader import engine
+import loguru
 
+from handlers import dp
+from loader import bot_engine
 
 if __name__ == '__main__':
-    engine.start()
+    loguru.logger.info(f"Number of handlers: {len(dp.message_handlers.handlers)}.")
+    bot_engine.start()

@@ -1,4 +1,4 @@
-from loader import dp
+from app.core.loader import dp
 
 
 @dp.message_handler()

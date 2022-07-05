@@ -1,4 +1,4 @@
-from utils import WebhookModel, PollingModel
+from app.utils import WebhookModel, PollingModel
 import argparse
 
 __all__ = ['dp', 'bot_engine', 'bot', 'memory_storage']
